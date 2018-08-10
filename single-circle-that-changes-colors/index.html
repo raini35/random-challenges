@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <link rel="stylesheet" href="style.css" />
+  <!-- <meta http-equiv="refresh" content="1" > -->
+  <title>Document</title>
+
+</head>
+<body>
+  <div class="center-div">
+    <div class="dot"></div>
+  </div>
+</body>
+<script>
+  var dot = document.getElementsByClassName("dot")[0];
+  dot.style.cursor = 'pointer';
+
+  var colors = ["blue", "yellow", "red", "green", "purple", "pink", "black", "gray"];
+  counter = 0
+
+  dot.onclick = function() {
+    dot.style.backgroundColor = colors[counter];
+    if(counter !== 0 && counter % (colors.length - 1) === 0) {
+      counter = 0;
+    } else {
+      counter = counter + 1;
+    }
+  };
+</script>
+</html>

@@ -1,4 +1,6 @@
 /* https://robots.thoughtbot.com/how-to-make-a-chrome-extension
+I want to be able to create an app that allows me to click on the icon button
+and records the title of content, type of content, and url of content that I consumed. Url should be automagically collected. Title and type can just be inputted by the user.
  */
 
 {

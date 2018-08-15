@@ -1,0 +1,15 @@
+/* https://robots.thoughtbot.com/how-to-make-a-chrome-extension
+ */
+
+{
+  "name": "Collects Content Consumed",
+  "version": "0.1",
+  "description": "Allows me to record the videos and articles I consumed",
+  "content_scripts": [{
+    "matches": [
+      "<all_urls>"
+    ],
+    "js": ["content.js"]
+  }],
+  "manifest_version": 2
+}

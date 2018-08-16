@@ -13,5 +13,8 @@ and records the title of content, type of content, and url of content that I con
     ],
     "js": ["content.js"]
   }],
+  "background": {
+    "script": ["background.js"]
+  }
   "manifest_version": 2
 }

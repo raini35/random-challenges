@@ -4,11 +4,11 @@ chrome.runtime.onMessage.addListener(receiver);
 
 window.title = "";
 window.url = "";
+window.type = "";
 
 function receiver(request, sender, sendResponse) {
-  console.log(request);
   window.title = request.title;
   window.url = request.url;
-  console.log(title);
-  console.log(url); 
+  console.log("Title: " + window.title);
+  console.log("URL: " + window.url);
 }

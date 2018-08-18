@@ -21,5 +21,8 @@ and records the title of content, type of content, and url of content that I con
     "default_popup": "index.html",
     "default_title": "Lookup a definition!"
   },
+  "permissions": [
+    "storage"
+  ], 
   "manifest_version": 2
 }

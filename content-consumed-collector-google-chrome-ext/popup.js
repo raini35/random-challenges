@@ -4,124 +4,75 @@ let url_input = document.getElementById('content_url')
 let article_type = document.getElementById('article_type')
 let video_type = document.getElementById('video_type')
 
-
-function isEmpty(obj) {
-    for(var key in obj) {
-        if(obj.hasOwnProperty(key))
-            return false;
-    }
-    return true;
-}
-
-function onClick(type) {
-  chrome.runtime.getBackgroundPage(function(bg) {
-    bg.type = type;
-    console.log("Type: " + bg.type);
-  });
-}
-
-function loadData() {
-  console.log("Loading data...")
-
-  chrome.runtime.getBackgroundPage(function(bg) {
-      old_items = {}
-      time_info = new Date();
-      key = time_info.getMonth() + '-' + time_info.getDate();
-      let temporary = "";
-
-      new_content = {
-        "title": bg.title,
-        "type": bg.type,
-        "url": bg.url,
-        "time_accessed": time_info
-      };
-
-      console.log(new_content["time_accessed"]);
-      if(isEmpty(old_items)) {
-        chrome.storage.sync.set({key: [new_content]}, function(result) {
-          console.log(result);
-        });
-      } else {
-        chrome.storage.sync.set({key: [...old_items, new_content]}, function(result) {
-          console.log(result);
-        });
-      }
-
-      // chrome.storage.sync.get("5", function(result) {
-      //   temporary = result;
-      //   console.log(temporary);
-      // })
-      // chrome.storage.sync.set({"5": new_content}, function() { console.log(new_content)});
-    });
-
-
-
-    // chrome.storage.sync.get("5", function(result) {
-    //   console.log("Current value:");
-    //   console.log(result);
-    // })
-  // chrome.runtime.getBackgroundPage(function(bg) {
-      // old_items = []
-      // time_info = new Date();
-      // key = time_info.getMonth() + '-' + time_info.getDate();
-      //
-      // new_content = {
-      //   "title": bg.title,
-      //   "type": bg.type,
-      //   "url": bg.url,
-      //   "time_accessed": time_info
-      // };
-      //
-      // chrome.storage.sync.get("7-8", function(result) {
-      //   old_items = result;
-      // });
-      //
-      //
-      // if(old_items.length === 0) {
-      //   console.log('It is empty');
-      //   chrome.storage.sync.set({"7-8": "hello"}, function() {
-      //     chrome.storage.sync.get("7-8", function(result) {
-      //       console.log(result);
-      //     });
-      //   });
-      // } else {
-      //   console.log("There are things here");
-      // }
-
-      // chrome.storage.sync.set({ "yourBody": "myBody" }, function(){
-      //     console.log("myBody placed");
-      // });
-      //
-      // chrome.storage.sync.get(/* String or Array */["yourBody"], function(items){
-      //     //  items = [ { "yourBody": "myBody" } ]
-      //     console.log(items);
-      // });
-
-      // chrome.storage.sync.get([key], function(result) {
-      //   console.log("Current: " + result);
-      // });
-      // else {
-      //
-      // }
-
-      //
-      //
-      //
-      // chrome.storage.sync.set({"today": }, function() {
-      //     console.log('Value is set to ' + bg.title);
-      // });
-  // });
-}
-
 document.addEventListener("DOMContentLoaded", function(event) {
   let submit_button = document.getElementById('submit_button');
-  submit_button.addEventListener('click', loadData);
+  submit_button.addEventListener('click', submitData);
 
-  article_type.addEventListener('click', function() { onClick('article');});
-  video_type.addEventListener('click', function() { onClick('video'); });
+  article_type.addEventListener('click', function() {
+    captureType('article');
+  });
+
+  video_type.addEventListener('click', function() {
+    captureType('video');
+  });
 });
 
 chrome.runtime.getBackgroundPage(function(bg) {
-    title_input.value = bg.title;
-    url_input.value = bg.url;
+  title_input.value = bg.title;
+  url_input.value = bg.url;
 });
+
+function isEmpty(obj) {
+  if (obj === undefined || obj.length == 0) {
+      return true;
+  }
+  return false;
+}
+
+function captureType(type) {
+  chrome.runtime.getBackgroundPage(function(bg) {
+    bg.type = type;
+  });
+}
+
+function returnNewContent(bg, time_info) {
+  return {
+    "title": bg.title,
+    "type": bg.type,
+    "time_accessed": time_info
+  };
+};
+
+function urlExists(url) {
+  for(var prop in obj) {
+        if(obj.hasOwnProperty(prop))
+            return false;
+    }
+}
+
+function submitData() {
+  console.log("Loading data...")
+  let old_items;
+  let time_info = new Date();
+  let current_day = time_info.getMonth() + '-' + time_info.getDate();
+
+  chrome.runtime.getBackgroundPage(function(bg) {
+    console.log("Inside Background Page Callback");
+    let new_item = returnNewContent(bg, time_info);
+    let url = bg.url;
+
+    chrome.storage.sync.get([current_day], function(result) {
+      items = result[current_day];
+      if(url in items) {
+        console.log("Content already listed.");
+      } else {
+        items[url] = new_item;
+        chrome.storage.sync.set({
+          [current_day]: items
+        }, function() {
+          console.log("Added new item to: " + current_day);
+        });
+      }
+    });
+  });
+}

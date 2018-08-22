@@ -9,6 +9,4 @@ window.type = "";
 function receiver(request, sender, sendResponse) {
   window.title = request.title;
   window.url = request.url;
-  console.log("Title: " + window.title);
-  console.log("URL: " + window.url);
 }

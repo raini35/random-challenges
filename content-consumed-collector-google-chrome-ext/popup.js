@@ -1,4 +1,3 @@
-console.log("popup running...")
 let title_input = document.getElementById('content_title')
 let url_input = document.getElementById('content_url')
 let article_type = document.getElementById('article_type')
@@ -22,6 +21,7 @@ chrome.runtime.getBackgroundPage(function(bg) {
   url_input.value = bg.url;
 });
 
+// Functions
 function isEmpty(obj) {
   if (obj === undefined || obj.length == 0) {
       return true;
@@ -51,20 +51,17 @@ function urlExists(url) {
 }
 
 function submitData() {
-  console.log("Loading data...")
   let old_items;
   let time_info = new Date();
   let current_day = time_info.getMonth() + '-' + time_info.getDate();
 
   chrome.runtime.getBackgroundPage(function(bg) {
-    console.log("Inside Background Page Callback");
     let new_item = returnNewContent(bg, time_info);
     let url = bg.url;
 
     chrome.storage.sync.get([current_day], function(result) {
       items = result[current_day];
       if(url in items) {
-        console.log("Content already listed.");
       } else {
         items[url] = new_item;
         chrome.storage.sync.set({

@@ -43,13 +43,6 @@ function returnNewContent(bg, time_info) {
   };
 };
 
-function urlExists(url) {
-  for(var prop in obj) {
-        if(obj.hasOwnProperty(prop))
-            return false;
-    }
-}
-
 function submitData() {
   let old_items;
   let time_info = new Date();

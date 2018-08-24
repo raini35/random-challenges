@@ -4,38 +4,52 @@ class App extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      front_default: <h1>Hello World!!!</h1>,
-      back_default: <div></div>,
-      front_shiny: <div></div>,
-      back_shiny: <div></div>,
+      backgroundIndex: 0,
+      backgrounds: [],
     }
+    this.changeBackground = this.changeBackground.bind(this);
   }
+
+  changeBackground () {
+    this.setState(function ({ backgroundIndex }) {
+      const nextBackgroundIndex = ++backgroundIndex % this.state.backgrounds.length
+
+      return { backgroundIndex: nextBackgroundIndex }
+    }, function () {
+      this.timeout = setTimeout(
+        this.changeBackground,
+        500
+      )
+    })
+  }
+
   componentDidMount() {
     fetch('https://pokeapi.co/api/v2/pokemon-form/1/')
       .then(results => {
         return results.json();
       })
       .then(data => {
-        let front_default = <img src={data.sprites.front_default} />
-        let back_default = <img src={data.sprites.back_default} />
-        let front_shiny = <img src={data.sprites.front_shiny} />
-        let back_shiny = <img src={data.sprites.back_shiny} />
-
         this.setState({
-          front_default: front_default,
-          back_default: back_default,
-          front_shiny: front_shiny,
-          back_shiny: back_shiny,
-        })
+          backgrounds: [
+            data.sprites.front_default,
+            data.sprites.back_default,
+            data.sprites.front_shiny,
+            data.sprites.back_shiny
+          ]
+        });
+      })
+      .then(() => {
+        this.timeout = setTimeout(
+          this.changeBackground,
+          500
+        );
       })
   }
+
   render() {
     return (
       <div>
-        {this.state.front_default}
-        {this.state.back_default}
-        {this.state.front_shiny}
-        {this.state.back_shiny}
+        <img src={this.state.backgrounds[this.state.backgroundIndex]} />
       </div>
     );
   }

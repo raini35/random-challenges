@@ -4,16 +4,6 @@ import React, {
 import Button from './Button';
 import Pokemon from './Pokemon';
 class App extends Component {
-  {
-    url: [
-      {
-        name: "",
-        backgrounds:[
-          
-        ]
-      }
-    ]
-  }
   constructor(props) {
     super(props);
     this.state = {
@@ -65,7 +55,14 @@ class App extends Component {
   }
 
   loadEachPokemon(data) {
-    listItems = [];
+    console.log(data)
+    let x = /offset=([0-9]+)/g
+    let num = /([0-9+])/g
+    let m = data.match(x);
+    let number = m.match(num);
+    console.log(m);
+    console.log(number);
+
     data.results.forEach(x => {
       fetch(x.url)
         .then(results => {
@@ -91,33 +88,15 @@ class App extends Component {
   componentDidMount() {
     this.loadAllPokemon('https://pokeapi.co/api/v2/pokemon-form/');
   }
-  // this.setState({
-  //   backgrounds: [
-  //     data.sprites.front_default,
-  //     data.sprites.back_default,
-  //     data.sprites.front_shiny,
-  //     data.sprites.back_shiny
-  //   ]
-  // });
-  // .then(() => {
-  //   this.timeout = setTimeout(
-  //     this.changeBackground,
-  //     500
-  //   );
-  // })
-  // <img src={this.state.backgrounds[this.state.backgroundIndex]} />
-  // const listOfPokemon = this.state.pokemons.map((data) => {
-  //   console.log(data);
-  // });
+
   render() {
-    // console.log(this.state);
-    this.setState({const listItems = this.state.pokemons.map((number) =>
-  <li>{number.name}</li>
-);
+    let listOfItems = this.state.pokemons.map(x => {
+      return <li>{x.name}</li>
+    })
     return (
       <div>
       <Button buttonName='Previous' url={this.state.prevUrl} handleClick={this.loadAllPokemon}/>
-        <ul>{listItems}</ul>
+        <ul>{listOfItems}</ul>
       <Button buttonName='Next' url={this.state.nextUrl} handleClick={this.loadAllPokemon}/>
       </div>
     );

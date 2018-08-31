@@ -1,26 +1,43 @@
 let onlyButton = document.getElementById('onlyButton');
-urls = [
+let urls = [
   {
     "url": "https://www.chase.com/",
-    "type": "login"
+    "type": "login",
+    "username": "username",
+    "password": "password"
   },
   {
     "url": "https://www.pnc.com/en/personal-banking.htm",
-    "type": "login"
+    "type": "login",
+    "username": "username",
+    "password": "password"
   },
   {
     "url": "https://www.wellsfargo.com/",
-    "type": "login"
+    "type": "login",
+    "username": "username",
+    "password": "password"
   }
 ]
 
 document.addEventListener("DOMContentLoaded", function(event) {
   onlyButton.addEventListener('click',
-  openURL());
+  openURL(urls));
 })
+
+function loginURL(url) {
+  username = url.username;
+  password = url.password;
+
+  chrome.tabs.create({url: url.url});
+}
 
 function openURL(urls) {
   urls.map(url => {
-    chrome.tabs.create({url: url})
+    if (url.type === "login") {
+      loginURL(url);
+    } else {
+      chrome.tabs.create({url: url.url})
+    }
   });
 }

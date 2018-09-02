@@ -44,6 +44,7 @@ function returnNewContent(bg, time_info) {
 };
 
 function submitData() {
+  console.log("SUBMIT DATA")
   let old_items;
   let time_info = new Date();
   let current_day = time_info.getMonth() + '-' + time_info.getDate();

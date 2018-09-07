@@ -1,8 +1,7 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
 
 function CityList (props) {
-  return <div>CityList</div>;
+  return <div>Different Cities</div>;
 }
 
 export default CityList;

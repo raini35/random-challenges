@@ -1,19 +1,20 @@
-import React, {
-  Component
-} from 'react';
-import logo from './logo.svg';
+import React, { Component} from 'react';
 import CityList from './components/CityList';
+import CurrentCity from './components/CurrentCity';
 import './App.css';
 import axios from 'axios';
-import {
-  weather_api
-} from './api_key'
+import {weather_api} from './api_key'
 
 class App extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      selectedCity: {},
+      selectedCity: {
+        name: "Filler City",
+        main: {},
+        weather: {},
+        wind: {}
+      },
       citiesAdded: [],
       availableCities: [],
       cityDetails: {
@@ -29,25 +30,25 @@ class App extends Component {
     axios.get(`http://api.openweathermap.org/data/2.5/weather?zip=94040,us&appid=${weather_api.key}`)
       .then((res) => {
         console.log(res.data);
-        let name = "HOLLYWOOD";
-        let main = res.data.main;
-        let weather = res.data.weather;
-        let wind = res.data.wind;
-        let icon = {
-          url: `http://openweathermap.org/img/w/${weather.icon}.png`
-          description:
-        }
-        this.setState(prevState => ({
-          cityDetails: {
-            ...prevState.cityDetails,
-            name: {
-              icon,
-              main,
-              weather,
-              wind
-            }
-          }
-        }))
+        // let name = "HOLLYWOOD";
+        // let main = res.data.main;
+        // let weather = res.data.weather;
+        // let wind = res.data.wind;
+        // let icon = {
+        //   url: `http://openweathermap.org/img/w/${weather.icon}.png`
+        //   description:
+        // }
+        // this.setState(prevState => ({
+        //   cityDetails: {
+        //     ...prevState.cityDetails,
+        //     name: {
+        //       icon,
+        //       main,
+        //       weather,
+        //       wind
+        //     }
+        //   }
+        // }))
       })
   }
 
@@ -55,17 +56,43 @@ class App extends Component {
   render() {
     return (
       <div>
-        <h1> Weather app </h1>
-        <img src="http://openweathermap.org/img/w/10d.png" />
-        <p>Name:</p>
-        <p>Description:</p>
-        <p>Current Temp:</p>
-        <p>Temp Min:</p>
-        <p>Temp Max:</p>
-        <p>Wind Speed:</p>
+        <CurrentCity />
+        <CityList />
       </div>
     );
   }
 }
 
 export default App;
+
+
+
+
+//
+//
+// import React from "react";
+//
+// class Person extends React.Component {
+//   state = {
+//     selected: false
+//   }
+//   handleClick = () => {
+//     this.setState((prevState) => {
+//       return {
+//         selected: !prevState.selected
+//       }
+//     });
+//   }
+//   render(){
+//     const listItemStyle = {
+//       backgroundColor: this.state.selected ? "yellow" : null
+//     }
+//     return (
+//       <li style={listItemStyle} onClick={this.handleClick}>
+//         {this.props.name}
+//       </li>
+//     );
+//   }
+// }
+//
+// export default Person;

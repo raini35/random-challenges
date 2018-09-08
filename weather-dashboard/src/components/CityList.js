@@ -1,7 +1,10 @@
 import React from 'react';
 
-function CityList (props) {
-  return <div>Different Cities</div>;
-}
+const CityList = ({props}) => (
+  <div>
+    <h2>Available Cities</h2>
+    <button>+</button>
+  </div>
+);
 
 export default CityList;

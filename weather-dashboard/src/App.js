@@ -3,17 +3,17 @@ import CityList from './components/CityList';
 import CurrentCity from './components/CurrentCity';
 import './App.css';
 import axios from 'axios';
-import {weather_api} from './api_key'
+import {WEATHER_API} from './api_key'
 
 class App extends Component {
   constructor(props) {
     super(props);
     this.state = {
       selectedCity: {
-        name: "Filler City",
-        main: {},
-        weather: {},
-        wind: {}
+        "name": "",
+        "main": {},
+        "weather": {},
+        "wind": {}
       },
       citiesAdded: [],
       availableCities: [],
@@ -27,36 +27,36 @@ class App extends Component {
   }
 
   componentDidMount() {
-    axios.get(`http://api.openweathermap.org/data/2.5/weather?zip=94040,us&appid=${weather_api.key}`)
+    axios.get(`http://api.openweathermap.org/data/2.5/weather?zip=94040,us&appid=${WEATHER_API.key}`)
       .then((res) => {
         console.log(res.data);
-        // let name = "HOLLYWOOD";
-        // let main = res.data.main;
-        // let weather = res.data.weather;
-        // let wind = res.data.wind;
-        // let icon = {
-        //   url: `http://openweathermap.org/img/w/${weather.icon}.png`
-        //   description:
-        // }
-        // this.setState(prevState => ({
-        //   cityDetails: {
-        //     ...prevState.cityDetails,
-        //     name: {
-        //       icon,
-        //       main,
-        //       weather,
-        //       wind
-        //     }
-        //   }
-        // }))
+        console.log(res.data.name);
+        console.log(res.data.main);
+        console.log(res.data.weather[0]);
+        console.log(res.data.wind);
+        let currentCityInfo = {
+          "name": res.data.name,
+          "main": res.data.main,
+          "weather": res.data.weather[0],
+          "wind": res.data.wind
+        };
+        this.setState(prevState => ({
+          selectedCity: currentCityInfo
+        }));
+
+        console.log(this.state.selectedCity);
       })
   }
 
-  function
+  handleClick = (event) => {
+
+  }
+
   render() {
     return (
       <div>
-        <CurrentCity />
+        <h1>Weather App</h1>
+        <CurrentCity data={this.state.selectedCity}/>
         <CityList />
       </div>
     );

@@ -1,15 +1,17 @@
 import React, { Component} from 'react';
 import CityList from './components/CityList';
 import CurrentCity from './components/CurrentCity';
+import Search from './components/Search';
 import './App.css';
 import axios from 'axios';
-import {WEATHER_API} from './api_key'
+import {weather_api} from './api_key'
 
 class App extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      selectedCity: {
+      selectedCityName: '',
+      selectedCityDetails: {
         "name": "",
         "main": {},
         "weather": {},
@@ -26,8 +28,21 @@ class App extends Component {
     };
   }
 
+  changeCitySelected = (city) => {
+    if(city.length === 0) {
+      console.log("You didn't enter anything.")
+    } else {
+      console.log("Changed city");
+      this.setState(prevState => {
+        selectedCityName: city
+      }, () => {
+        console.log(this.state.selectedCityName);
+      })
+
+    }
+  }
   componentDidMount() {
-    axios.get(`http://api.openweathermap.org/data/2.5/weather?zip=94040,us&appid=${WEATHER_API.key}`)
+    axios.get(`http://api.openweathermap.org/data/2.5/weather?zip=94040,us&appid=${weather_api.key}`)
       .then((res) => {
         console.log(res.data);
         console.log(res.data.name);
@@ -41,10 +56,10 @@ class App extends Component {
           "wind": res.data.wind
         };
         this.setState(prevState => ({
-          selectedCity: currentCityInfo
+          selectedCityDetails: currentCityInfo
         }));
 
-        console.log(this.state.selectedCity);
+        console.log(this.state.selectedCityDetails);
       })
   }
 
@@ -56,7 +71,8 @@ class App extends Component {
     return (
       <div>
         <h1>Weather App</h1>
-        <CurrentCity data={this.state.selectedCity}/>
+        <Search submitCity={this.changeCitySelected}/>
+        <CurrentCity data={this.state.selectedCityDetails}/>
         <CityList />
       </div>
     );

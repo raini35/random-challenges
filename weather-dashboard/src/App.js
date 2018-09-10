@@ -10,45 +10,41 @@ class App extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      selectedCityName: '',
+      selectedCityName: 'N/A',
       selectedCityDetails: {
         "name": "",
         "main": {},
         "weather": {},
         "wind": {}
       },
-      citiesAdded: [],
-      availableCities: [],
-      cityDetails: {
-        name: "",
-        main: {},
-        weather: {},
-        wind: {}
-      }
+      // citiesAdded: [],
+      // availableCities: [],
+      // cityDetails: {
+      //   name: "",
+      //   main: {},
+      //   weather: {},
+      //   wind: {}
+      // }
     };
   }
 
   changeCitySelected = (city) => {
     if(city.length === 0) {
-      console.log("You didn't enter anything.")
+      console.log("You didn't enter anything");
     } else {
-      console.log("Changed city");
-      this.setState(prevState => {
+      console.log("City selected");
+      console.log(city);
+      this.setState((prevState) => ({
         selectedCityName: city
-      }, () => {
-        console.log(this.state.selectedCityName);
+      }), () => {
+        this.updateWeatherInfo();
       })
-
     }
   }
+
   componentDidMount() {
-    axios.get(`http://api.openweathermap.org/data/2.5/weather?zip=94040,us&appid=${weather_api.key}`)
+    axios.get(`http://api.openweathermap.org/data/2.5/weather?q=Houston,us&appid=${weather_api.key}`)
       .then((res) => {
-        console.log(res.data);
-        console.log(res.data.name);
-        console.log(res.data.main);
-        console.log(res.data.weather[0]);
-        console.log(res.data.wind);
         let currentCityInfo = {
           "name": res.data.name,
           "main": res.data.main,
@@ -58,8 +54,24 @@ class App extends Component {
         this.setState(prevState => ({
           selectedCityDetails: currentCityInfo
         }));
+      })
+  }
 
-        console.log(this.state.selectedCityDetails);
+  updateWeatherInfo = () => {
+    console.log("Updating weather info...");
+    console.log(this.state.selectedCityName);
+    console.log(`http://api.openweathermap.org/data/2.5/weather?q=${this.state.selectedCityName},us&appid=${weather_api.key}`)
+    axios.get(`http://api.openweathermap.org/data/2.5/weather?q=${this.state.selectedCityName},us&appid=${weather_api.key}`)
+      .then((res) => {
+        let currentCityInfo = {
+          "name": res.data.name,
+          "main": res.data.main,
+          "weather": res.data.weather[0],
+          "wind": res.data.wind
+        };
+        this.setState(prevState => ({
+          selectedCityDetails: currentCityInfo
+        }));
       })
   }
 
@@ -73,7 +85,6 @@ class App extends Component {
         <h1>Weather App</h1>
         <Search submitCity={this.changeCitySelected}/>
         <CurrentCity data={this.state.selectedCityDetails}/>
-        <CityList />
       </div>
     );
   }

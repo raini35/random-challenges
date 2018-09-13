@@ -1,3 +1,4 @@
+console.log("Background running...")
 chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
   if (request.type == "openTab") {
     // chrome.tabs.create({
@@ -5,6 +6,7 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
     //   "selected": true
     // }, function(tab) {
     // });
+    openURL(urls);
     console.log("OPEN TAB")
   }
 });
@@ -39,12 +41,8 @@ function loginURL(url) {
 
 function openURL(urls) {
   urls.map(url => {
-    if (url.type === "login") {
-      loginURL(url);
-    } else {
       chrome.tabs.create({
         url: url.url
-      })
-    }
+    })
   });
 }

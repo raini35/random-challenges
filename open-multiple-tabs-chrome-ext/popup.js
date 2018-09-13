@@ -1,5 +1,4 @@
 document.getElementById("onlyButton").addEventListener("click", function() {
-
   chrome.runtime.sendMessage({
     type: "openTab"
   }, function(response) {
@@ -8,4 +7,4 @@ document.getElementById("onlyButton").addEventListener("click", function() {
 
 });
 
-// Can't seem to access Chase DOM 
+// Can't seem to access Chase DOM

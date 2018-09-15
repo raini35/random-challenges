@@ -12,10 +12,8 @@
 // Input: entry being updated (entry)
 // Output: true or false
 function updateNextDate(entry) {
-  console.log("Updating next date attribute...")
   entry.nextDate = new Date(entry.startDate)
   entry.nextDate.setDate(entry.nextDate.getDate() + entry.ir)
-  console.log(entry.nextDate)
   return true
 }
 
@@ -23,8 +21,6 @@ function updateNextDate(entry) {
 // Input: previous easiness factor (prevEF) and quality score (qS)
 // Output: new easiness factor (newEF)
 function getEF(entry) {
-  console.log("Getting EF...")
-  console.log("prevEF: " + entry.prevEF)
   let newEF = entry.prevEF - 0.8 + (0.28 * entry.currentQR) - (0.02 * entry.currentQR * entry.currentQR)
 
   if (newEF <= 1.3) {
@@ -85,3 +81,4 @@ addAnEntry(entry, "Asymptotic Analysis")
 addQRScore(entry)
 updateN(entry)
 getIrInterval(entry)
+console.log(entry)

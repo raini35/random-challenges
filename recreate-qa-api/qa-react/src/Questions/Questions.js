@@ -1,20 +1,19 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import {Link} from 'react-router-dom';
 import axios from 'axios';
 
 class Questions extends Component {
   constructor(props) {
     super(props);
-
     this.state = {
-      questions: null,
+      questions: null
     };
   }
 
   async componentDidMount() {
     const questions = (await axios.get('http://localhost:8081/')).data;
     this.setState({
-      questions,
+      questions
     });
   }
 
@@ -40,8 +39,9 @@ class Questions extends Component {
           }
         </div>
       </div>
-    )
+    );
   }
+
 }
 
 export default Questions;

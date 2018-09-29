@@ -5,20 +5,22 @@ class Question extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      question:null
+      question: null,
     };
   }
 
   async componentDidMount() {
-    const {match:{params}} = this.props;
-    const question = (await axios.get(`http://localhost:8081/${params.questionId}`)).data;
-    this.setState({
-      question,
-    })
+      const {match: {params}} = this.props;
+      const question = (await axios.get(`http://localhost:8081/${params.questionId}`)).data;
+
+      this.setState({
+        question,
+      })
   }
+
   render() {
     const {question} = this.state;
-    if(question === null) return <p>Loading ...</p>
+    if (question === null) return <p>Loading questions...</p>;
     return (
       <div className="container">
         <div className="row">
@@ -28,8 +30,8 @@ class Question extends Component {
             <hr className="my-4"/>
             <p>Answers: </p>
             {
-              question.answers.map((answer, idx) =>(
-                <p className="lead" key={idx}>{answer.answer}</p>
+              question.answers.map((answer, idx) => (
+                <p key={idx} className="lead">{answer.answer}</p>
               ))
             }
           </div>

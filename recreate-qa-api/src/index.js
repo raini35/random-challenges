@@ -3,6 +3,8 @@ const helmet = require('helmet');
 const morgan = require('morgan');
 const cors = require('cors');
 const bodyParser = require('body-parser');
+const jwt = require('express-jwt');
+const jwksRsa = require('jwks-rsa')
 
 const app = express();
 const questions = [];
@@ -31,32 +33,48 @@ app.get('/:id', (req, res) => {
   res.send(question[0]);
 })
 
-app.post('/', (req, res) => {
+const checkJwt = jwt({
+  secret: jwksRsa.expressJwtSecret({
+  cache: true,
+  rateLimit: true,
+  jwksRequestsPerMinute: 5,
+  jwksUri: `https://<YOUR_AUTH0_DOMAIN>/.well-known/jwks.json`
+  }),
+
+  // Validate the audience and the issuer.
+  audience: '<YOUR_AUTH0_CLIENT_ID>',
+  issuer: `https://<YOUR_AUTH0_DOMAIN>/`,
+  algorithms: ['RS256']
+});
+
+app.post('/', checkJwt, (req, res) => {
   const {title, description} = req.body;
   const newQuestion = {
     id: questions.length + 1,
     title,
     description,
-    answers: []
-  }
-
+    answers: [],
+    author: req.user.name,
+  };
   questions.push(newQuestion);
+  res.status(200).send();
+});
 
-  res.sendStatus(200);
-
-})
-
-app.post('/answer/:id', (req, res) => {
+// insert a new answer to a question
+app.post('/answer/:id', checkJwt, (req, res) => {
   const {answer} = req.body;
+
   const question = questions.filter(q => (q.id === parseInt(req.params.id)));
-  if(question.length > 1) return res.sendStatus(500);
-  if(question.length === 0) return res.sendStatus(400);
+  if (question.length > 1) return res.status(500).send();
+  if (question.length === 0) return res.status(404).send();
 
   question[0].answers.push({
-    answer
-  })
-  res.sendStatus(200);
-})
+    answer,
+    author: req.user.name,
+  });
+
+  res.status(200).send();
+});
 
 app.listen(8081, () => {
   console.log('Listening on port 8081');

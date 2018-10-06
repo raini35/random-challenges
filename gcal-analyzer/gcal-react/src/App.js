@@ -1,24 +1,27 @@
 import React, { Component } from 'react';
-import Calendar from 'react-calendar';
+import Calendar from './components/Calendar'; 
+import './App.css';
 
 class App extends Component {
-  state = {
-    date: new Date(),
-  }
-
-  onChange = date => this.setState({ date })
 
   render() {
     return (
-      <div>
-        <p>{this.state.date.toString()}</p>
-        <Calendar
-          onChange={this.onChange}
-          value={this.state.date}
-        />
+      <div className="App">
+        <header>
+          <div id="logo">
+            <span className="icon">date_range</span>
+            <span>
+              react<b>calendar</b>
+            </span>
+          </div>
+        </header>
+        <main>
+          <Calendar />
+        </main>
       </div>
     );
   }
+
 }
 
 export default App;

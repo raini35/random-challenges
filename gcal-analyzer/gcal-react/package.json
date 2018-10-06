@@ -3,8 +3,14 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@wojtekmaj/react-daterange-picker": "^1.1.1",
+    "date-fns": "^1.29.0",
+    "moment-range": "^4.0.1",
+    "rc-calendar": "^9.7.9",
     "react": "^16.5.2",
     "react-calendar": "^2.17.4",
+    "react-date-picker": "^6.12.1",
+    "react-daterange-picker": "^2.0.1",
     "react-dom": "^16.5.2",
     "react-scripts": "2.0.3"
   },

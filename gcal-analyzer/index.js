@@ -5,6 +5,8 @@ const {google} = require('googleapis');
 // If modifying these scopes, delete token.json.
 const SCOPES = ['https://www.googleapis.com/auth/calendar.readonly'];
 const TOKEN_PATH = 'token.json';
+const calendarEvents = [];
+let eventList = [];
 
 // Load client secrets from a local file.
 fs.readFile('credentials.json', (err, content) => {
@@ -63,41 +65,88 @@ function getAccessToken(oAuth2Client, callback) {
   });
 }
 
-/**
- * Lists the next 10 events on the user's primary calendar.
- * @param {google.auth.OAuth2} auth An authorized OAuth2 client.
- */
+function getStartDate(day, month, year) {
+  return new Date(year, month - 1, day);
+}
+
+function getEndDate(day, month, year) {
+  return new Date(year, month - 1, day + 1 );
+}
+
+function getDates() {
+  var startDate = getStartDate(1, 10, 2018);
+  var endDate = getEndDate(4, 10, 2018);
+
+  return [startDate, endDate];
+}
+
+// msToTime function came from https://www.htmlgoodies.com/html5/javascript/calculating-the-difference-between-two-dates-in-javascript.html
+function msToTime(difference_ms) {
+ //take out milliseconds
+ difference_ms = difference_ms/1000;
+ var seconds = Math.floor(difference_ms % 60);
+ difference_ms = difference_ms/60;
+ var minutes = Math.floor(difference_ms % 60);
+ difference_ms = difference_ms/60;
+ var hours = Math.floor(difference_ms % 24);
+ var days = Math.floor(difference_ms/24);
+
+ return days + ':' + hours + ':' + minutes + ':' + seconds;
+}
+
+function calculateDuration(start, end) {
+  const startDateTime = new Date(start);
+  const endDateTime = new Date(end);
+  return msToTime(Math.abs(endDateTime - startDateTime));
+}
+
+function getEvents(currentCal, calendar) {
+  const dates = getDates();
+  const startDate = dates[0]
+  const endDate = dates[1]
+
+  return new Promise(function(resolve,reject){
+    calendar.events.list({
+      calendarId: currentCal.id,
+      timeMin: (startDate.toISOString()),
+      timeMax: (endDate.toISOString()),
+      singleEvents: true,
+      orderBy: 'startTime',
+    }, (err, res) => {
+      if (err) {
+        return console.log('The API returned an error: ' + err);
+      } else {
+        if(currentCal.summary !== "Water") {
+            if(res.data.items.length > 0) {
+              const events = res.data.items;
+              resolve(events)
+            }
+        }
+      }
+    });
+  });
+}
+
+
+function getCalendarIds(calendarClient) {
+  return new Promise(function(resolve,reject){
+    calendarClient.calendarList.list({}, (err, resp) => {
+      const listOfCalendars = resp.data.items;
+      resolve(listOfCalendars);
+    });
+  });
+}
+
 function listEvents(auth) {
-  const calendar = google.calendar({version: 'v3', auth});
-  calendar.calendarList.list({},
-    (err, result) => {
-    if (err) {
+  const calendarClient = google.calendar({version: 'v3', auth});
+  getCalendarIds(calendarClient).then(function(listOfCalendars){
+    addCalendars(listOfCalendars).then(function() {
+      console.log(events)
+    }).catch(function(err) {
       console.log(err);
-    } else {
-      // console.log("Output: " + JSON.stringify(result.data));
-      var calendars = result.data.items
-      calendars.map(cal => console.log(cal.summary))
-
-    }
-  })
-
-  // calendar.events.list({
-  //   calendarId: 'primary',
-  //   timeMin: (new Date()).toISOString(),
-  //   maxResults: 10,
-  //   singleEvents: true,
-  //   orderBy: 'startTime',
-  // }, (err, res) => {
-  //   if (err) return console.log('The API returned an error: ' + err);
-  //   const events = res.data.items;
-  //   if (events.length) {
-  //     console.log('Upcoming 10 events:');
-  //     events.map((event, i) => {
-  //       const start = event.start.dateTime || event.start.date;
-  //       console.log(`${start} - ${event.summary}`);
-  //     });
-  //   } else {
-  //     console.log('No upcoming events found.');
-  //   }
-  // });
+    });
+  }).catch(function(err){
+    console.log(err)
+  });
+  console.log(calendars)
 }

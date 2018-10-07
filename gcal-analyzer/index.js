@@ -6,8 +6,8 @@ const {google} = require('googleapis');
 const SCOPES = ['https://www.googleapis.com/auth/calendar.readonly'];
 const TOKEN_PATH = 'token.json';
 const calendarEvents = [];
-let eventList = [];
-
+let eventLog = [];
+let listOfCalendars = [];
 // Load client secrets from a local file.
 fs.readFile('credentials.json', (err, content) => {
   if (err) return console.log('Error loading client secret file:', err);
@@ -75,78 +75,63 @@ function getEndDate(day, month, year) {
 
 function getDates() {
   var startDate = getStartDate(1, 10, 2018);
-  var endDate = getEndDate(4, 10, 2018);
+  var endDate = getEndDate(6, 10, 2018);
 
   return [startDate, endDate];
 }
 
-// msToTime function came from https://www.htmlgoodies.com/html5/javascript/calculating-the-difference-between-two-dates-in-javascript.html
-function msToTime(difference_ms) {
- //take out milliseconds
- difference_ms = difference_ms/1000;
- var seconds = Math.floor(difference_ms % 60);
- difference_ms = difference_ms/60;
- var minutes = Math.floor(difference_ms % 60);
- difference_ms = difference_ms/60;
- var hours = Math.floor(difference_ms % 24);
- var days = Math.floor(difference_ms/24);
-
- return days + ':' + hours + ':' + minutes + ':' + seconds;
+function listEvents(auth) {
+  const dates = getDates();
+  const startDate = dates[0]
+  const endDate = dates[1]
+  const calendarClient = google.calendar({version: 'v3', auth});
+  calendarClient.calendarList.list({}, (err, resp) => {
+    const calendars = []
+    resp.data.items.map(item => {
+      if(item.id !== '#contacts@group.v.calendar.google.com' && item.id !=='en.usa#holiday@group.v.calendar.google.com') {
+        calendars.push(item)
+      }
+    });
+    const client = [{"id": '7aa9binu4ibje6gt2p1ktc2aq4@group.calendar.google.com'}, {"id": '7aa9binu4ibje6gt2p1ktc2aq4@group.calendar.google.com'}]
+    save(calendarClient, calendars).then(function(){
+       console.log('success');
+    }).catch(function(err){
+      console.log("ERROR ERROR")
+       console.log('error');
+       console.log(err)
+    }).then(function() {
+      console.log("HELLO")
+      console.log(eventLog)
+    })
+  });
 }
 
-function calculateDuration(start, end) {
-  const startDateTime = new Date(start);
-  const endDateTime = new Date(end);
-  return msToTime(Math.abs(endDateTime - startDateTime));
-}
-
-function getEvents(currentCal, calendar) {
+function calendarPromise(id, calendarClient) {
   const dates = getDates();
   const startDate = dates[0]
   const endDate = dates[1]
 
-  return new Promise(function(resolve,reject){
-    calendar.events.list({
-      calendarId: currentCal.id,
+  console.log("INSIDE CALENDAR PROMISE FUNC")
+  return new Promise(function(resolve, reject) {
+    calendarClient.events.list({
+      calendarId: id,
       timeMin: (startDate.toISOString()),
       timeMax: (endDate.toISOString()),
       singleEvents: true,
       orderBy: 'startTime',
     }, (err, res) => {
       if (err) {
-        return console.log('The API returned an error: ' + err);
+        console.log("ERROR ERROR")
+        reject(err);
       } else {
-        if(currentCal.summary !== "Water") {
-            if(res.data.items.length > 0) {
-              const events = res.data.items;
-              resolve(events)
-            }
-        }
-      }
-    });
-  });
+        res.data.items.map(item => eventLog.push(item.summary))
+        resolve(res);
+      }})
+  })
 }
 
-
-function getCalendarIds(calendarClient) {
-  return new Promise(function(resolve,reject){
-    calendarClient.calendarList.list({}, (err, resp) => {
-      const listOfCalendars = resp.data.items;
-      resolve(listOfCalendars);
-    });
-  });
-}
-
-function listEvents(auth) {
-  const calendarClient = google.calendar({version: 'v3', auth});
-  getCalendarIds(calendarClient).then(function(listOfCalendars){
-    addCalendars(listOfCalendars).then(function() {
-      console.log(events)
-    }).catch(function(err) {
-      console.log(err);
-    });
-  }).catch(function(err){
-    console.log(err)
-  });
-  console.log(calendars)
+function save(calendarClient, clients ){
+    var promises = [];
+    clients.map(client => promises.push(calendarPromise(client.id, calendarClient)));
+    return Promise.all(promises);
 }

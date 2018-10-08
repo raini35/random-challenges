@@ -7,6 +7,7 @@ const SCOPES = ['https://www.googleapis.com/auth/calendar.readonly'];
 const TOKEN_PATH = 'token.json';
 const calendarEvents = [];
 let eventLog = [];
+let eventLogTwo = {}
 let listOfCalendars = [];
 // Load client secrets from a local file.
 fs.readFile('credentials.json', (err, content) => {
@@ -75,11 +76,60 @@ function getEndDate(day, month, year) {
 
 function getDates() {
   var startDate = getStartDate(1, 10, 2018);
-  var endDate = getEndDate(6, 10, 2018);
+  var endDate = getEndDate(7, 10, 2018);
 
   return [startDate, endDate];
 }
 
+// msToTime function came from https://www.htmlgoodies.com/html5/javascript/calculating-the-difference-between-two-dates-in-javascript.html
+function msToTime(difference_ms) {
+ //take out milliseconds
+ difference_ms = difference_ms/1000;
+ var seconds = Math.floor(difference_ms % 60);
+ difference_ms = difference_ms/60;
+ var minutes = Math.floor(difference_ms % 60);
+ difference_ms = difference_ms/60;
+ var hours = Math.floor(difference_ms % 24);
+ var days = Math.floor(difference_ms/24);
+
+ return [hours, minutes];
+}
+
+function calculateDuration(start, end) {
+  const startDateTime = new Date(start);
+  const endDateTime = new Date(end);
+  return msToTime(Math.abs(endDateTime - startDateTime));
+}
+
+function formatEvent(event) {
+  const {  kind, id, htmlLink, created, updated, summary, start, end, iCalUID} = event
+  const duration = calculateDuration(start.dateTime, end.dateTime);
+  return {
+    kind,
+    id,
+    htmlLink,
+    created,
+    updated,
+    summary,
+    start,
+    end,
+    duration,
+    iCalUID
+  }
+}
+
+function calcuTotalTimeSpent(events) {
+  var totalHours = 0
+  var totalMinutes = 0
+  events.map(event => {
+    totalHours = totalHours + event.duration[0]
+    totalMinutes  = totalMinutes + event.duration[1]
+  })
+  totalHours = totalHours + totalMinutes/60
+  minPart = (totalHours % 1) * 60
+  hourPart = totalHours - (totalHours % 1);
+  return [totalHours.toFixed(2), hourPart + ":" + minPart.toFixed(0)];
+}
 function listEvents(auth) {
   const dates = getDates();
   const startDate = dates[0]
@@ -88,43 +138,43 @@ function listEvents(auth) {
   calendarClient.calendarList.list({}, (err, resp) => {
     const calendars = []
     resp.data.items.map(item => {
-      if(item.id !== '#contacts@group.v.calendar.google.com' && item.id !=='en.usa#holiday@group.v.calendar.google.com') {
+      if(item.id !== '#contacts@group.v.calendar.google.com' && item.id !=='en.usa#holiday@group.v.calendar.google.com' && item.summary !== 'Water') {
         calendars.push(item)
       }
     });
-    const client = [{"id": '7aa9binu4ibje6gt2p1ktc2aq4@group.calendar.google.com'}, {"id": '7aa9binu4ibje6gt2p1ktc2aq4@group.calendar.google.com'}]
     save(calendarClient, calendars).then(function(){
-       console.log('success');
+      console.log(Object.keys(eventLogTwo));
+      for(key in eventLogTwo) {
+        const timeSpent = calcuTotalTimeSpent(eventLogTwo[key])
+        console.log(key +"," + timeSpent[0] +","+timeSpent[1])
+      }
     }).catch(function(err){
-      console.log("ERROR ERROR")
-       console.log('error');
        console.log(err)
-    }).then(function() {
-      console.log("HELLO")
-      console.log(eventLog)
-    })
+    });
   });
 }
 
-function calendarPromise(id, calendarClient) {
+function calendarPromise(client, calendarClient) {
   const dates = getDates();
   const startDate = dates[0]
   const endDate = dates[1]
-
-  console.log("INSIDE CALENDAR PROMISE FUNC")
   return new Promise(function(resolve, reject) {
     calendarClient.events.list({
-      calendarId: id,
+      calendarId: client.id,
       timeMin: (startDate.toISOString()),
       timeMax: (endDate.toISOString()),
       singleEvents: true,
       orderBy: 'startTime',
     }, (err, res) => {
       if (err) {
-        console.log("ERROR ERROR")
         reject(err);
       } else {
-        res.data.items.map(item => eventLog.push(item.summary))
+        if(!(client.summary in eventLog)) {
+          eventLogTwo[client.summary] = []
+        }
+        res.data.items.map(item => {
+          eventLogTwo[client.summary].push(formatEvent(item))
+        })
         resolve(res);
       }})
   })
@@ -132,6 +182,8 @@ function calendarPromise(id, calendarClient) {
 
 function save(calendarClient, clients ){
     var promises = [];
-    clients.map(client => promises.push(calendarPromise(client.id, calendarClient)));
+    clients.map(client => {
+      promises.push(calendarPromise(client, calendarClient));
+    });
     return Promise.all(promises);
 }

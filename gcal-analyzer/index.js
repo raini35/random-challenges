@@ -180,6 +180,7 @@ function calendarPromise(client, calendarClient) {
   })
 }
 
+// https://stackoverflow.com/questions/35381423/how-to-save-multiple-mongodb-collections-using-promise?rq=1
 function save(calendarClient, clients ){
     var promises = [];
     clients.map(client => {

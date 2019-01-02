@@ -77,22 +77,21 @@ function getEndDate(day, month, year) {
 function getDates() {
   var startDate = getStartDate(1, 10, 2018);
   var endDate = getEndDate(7, 10, 2018);
-
   return [startDate, endDate];
 }
 
 // msToTime function came from https://www.htmlgoodies.com/html5/javascript/calculating-the-difference-between-two-dates-in-javascript.html
 function msToTime(difference_ms) {
- //take out milliseconds
- difference_ms = difference_ms/1000;
- var seconds = Math.floor(difference_ms % 60);
- difference_ms = difference_ms/60;
- var minutes = Math.floor(difference_ms % 60);
- difference_ms = difference_ms/60;
- var hours = Math.floor(difference_ms % 24);
- var days = Math.floor(difference_ms/24);
+//take out milliseconds
+  difference_ms = difference_ms/1000;
+  var seconds = Math.floor(difference_ms % 60);
+  difference_ms = difference_ms/60;
+  var minutes = Math.floor(difference_ms % 60);
+  difference_ms = difference_ms/60;
+  var hours = Math.floor(difference_ms % 24);
+  var days = Math.floor(difference_ms/24);
 
- return [hours, minutes];
+  return [hours, minutes];
 }
 
 function calculateDuration(start, end) {
@@ -142,6 +141,7 @@ function listEvents(auth) {
         calendars.push(item)
       }
     });
+    
     save(calendarClient, calendars).then(function(){
       console.log(Object.keys(eventLogTwo));
       for(key in eventLogTwo) {

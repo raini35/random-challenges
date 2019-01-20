@@ -1,4 +1,10 @@
 const readline = require('readline');
+let letter = {'A':0, 'B':1,'C':2}
+let winningMoves =[["00", "01", "02"],
+["10", "11", "12"],
+["20", "21", "22"],
+["00", "11", "22"],
+["02", "11", "20"]];
 
 function board(moves) {
   console.log( "     A   B   C ");
@@ -14,20 +20,58 @@ function board(moves) {
   }
 }
 
-function checkMovesForWinner(moves) {
+function checkWinner(moves) {
+  for(var i = 0; i < winningMoves.length;i++) {
+    const winningCoords = winningMoves[i];
+    const first = winningCoords[0];
+    const second = winningCoords[1];
+    const third = winningCoords[2];
 
-  return true;
+    if(moves[first[0]][first[1]] !== ' ' && moves[first[0]][first[1]] === moves[second[0]][second[1]] && moves[first[0]][first[1]] === moves[third[0]][third[1]]) {
+      return true;
+    }
+  }
+  return false;
 }
 
-function getMove(currentPlayer) {
+function checkValidMove(moves, x, y) {
+  if(moves[x][y] !== ' ') {
+    return true
+  } else {
+    return false;
+  }
+}
 
+function getMove(rl, currentPlayer, moves, numberOfMoves) {
+  rl.question('It is ' + currentPlayer + "'s turn: ", (answer) => {
+    let x = answer[1];
+    let y = letter[answer[0]];
+
+    if (checkValidMove(moves, x, y)) {
+      board(moves);
+      console.log('Invalid: ' + answer + ' is already taken.')
+      getMove(rl, currentPlayer, moves, numberOfMoves)
+    } else {
+      moves[x][y] = currentPlayer;
+      board(moves);
+      if(checkWinner(moves)) {
+        console.log(currentPlayer + ' is the WINNER!!!')
+        rl.close();
+      } else if(numberOfMoves === 9) {
+        console.log('Tie!')
+        rl.close();
+      } else {
+        currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
+        numberOfMoves = numberOfMoves + 1;
+        getMove(rl, currentPlayer, moves, numberOfMoves++)
+      }
+    }
+  });
 }
-function answerIsCorrect(answer) {
-  return answer[0] == 'A' && answer[1] == '0';
-}
+
 function main() {
     let moves = [];
-    let letter = {'A':0, 'B':1,'C':2}
+
     for(var i = 0; i < 3; i++) {
       moves[i] = [];
       for(var j = 0; j < 3; j++) {
@@ -43,28 +87,7 @@ function main() {
     });
     let currentPlayer = 'X'
 
-
-    let noWinner = true
-    while(noWinner) {
-      rl.question('It is ' + currentPlayer + "'s turn: ", (answer) => {
-
-        // while(!answerIsCorrect(answer)) {
-        //   console.log('Input is not correct');
-        //   rl.question('It is ' + currentPlayer + "'s turn: ", (newAnswer) => {
-        //     answer = newAnswer;
-        //   });
-        // }
-        let x = letter[answer[0]];
-        let y = answer[1];
-
-        moves[x][y] = currentPlayer;
-        board(moves);
-        rl.close();
-      });
-      currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
-      // noWinner = checkMoves(moves);
-    }
-    // console.log(moves)
+    getMove(rl, currentPlayer, moves, 0)
 }
 
 main();

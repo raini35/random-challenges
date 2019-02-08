@@ -1,3 +1,134 @@
+// const readline = require('readline');
+//
+// class TicTacToe {
+//   constructor() {
+//     this._board = [
+//       ['-', '-','-'],
+//       ['-', '-','-'],
+//       ['-', '-','-'],
+//     ];
+//     this._currentPlayer = 'X';
+//   }
+//
+//   checkValid(x, y) {
+//     if(this._board[x][y] === '-') {
+//       return true;
+//     }
+//     return false;
+//   }
+//
+//   turn(rl) {
+//
+//     rl.question('Where do you want to move?', answer => {
+//       let x = answer[0];
+//       let y = answer[1];
+//       if(this.checkValid(x,y)) {
+//         this.printBoard()
+//         this._board[x][y] = 'X'
+//         this.printBoard()
+//         if(this.isBoardFull()) {
+//           console.log("BOARD IS FULL");
+//           rl.close();
+//         }
+//
+//         this.simpleAI(rl);
+//       } else {
+//         console.log("ERROR: You need to give me a valid input");
+//         this.turn(rl);
+//       }
+//
+//
+//       // Check if place is filled --> Retry
+//       // if(checkAvailable(answer))
+//       //
+//     })
+//   }
+//
+//
+//   start() {
+//       const rl = readline.createInterface({
+//         input: process.stdin,
+//         output: process.stdoutp
+//       })
+//
+//       this.printBoard();
+//       this.turn(rl);
+//   }
+//
+//   addToken(x, y, token) {
+//     if(this._board[x][y] == '-') {
+//       this._board[x][y] = token
+//     } else {
+//       console.log('ERROR: Already placed')
+//     }
+//   }
+//
+//   printBoard() {
+//     var i = 0;
+//     for(let i = 0; i < this._board.length; i++) {
+//       let row = this._board[i];
+//       let output = row[0];
+//       console.log(row.join('|'))
+//     }
+//     console
+//   }
+//
+//   isBoardFull() {
+//     for(var i = 0; i < this._board.length; i++) {
+//       let row = this._board[i];
+//       for(var j = 0; j<  row.length; j++) {
+//         if(row[j] === '-') {
+//           return false;
+//         }
+//       }
+//     }
+//     return true;
+//   }
+//
+//   simpleAI(rl) {
+//     try {
+//       if(this.isBoardFull()) {
+//         throw new Error('ERROR: Cannot place a token');
+//       } else {
+//         let coord = this.findSpot();
+//         this._board[coord[0]][coord[1]] = 'O'
+//         this.printBoard();
+//         this.turn(rl);
+//       }
+//     } catch(err) {
+//       throw err;
+//     }
+//
+//   }
+//
+//   findSpot() {
+//     for(let i = 0; i < this._board.length; i++) {
+//       let row = this._board[i];
+//       for( var j = 0; j < row.length; j++) {
+//         if(row[j] === '-') {
+//           return [i, j]
+//         }
+//       }
+//     }
+//   }
+// }
+//
+//
+// let game = new TicTacToe();
+// // game.printBoard();
+// // game.addToken(0, 1, 'X');
+// // game.printBoard();
+// // console.log(game.isBoardFull());
+// // game.simpleAI();
+// // game.printBoard();
+// // game.simpleAI();
+// // game.printBoard();
+// // for(var i = 0 ; i < 10; i ++) {
+// //   game.simpleAI();
+// //   game.printBoard();
+// // }
+// game.start();
+
 const readline = require('readline');
 let letter = {'A':0, 'B':1,'C':2}
 let winningMoves =[["00", "01", "02"],

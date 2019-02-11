@@ -1,5 +1,7 @@
 import time
 import re
+import sys
+
 start_time = time.time()
 # pattern = re.compile(r'"([A-Z]*)\s*,*\s*[0-9]*([A-Z]*).*"')
 # print('ORIGINAL %s' %line)
@@ -27,12 +29,13 @@ def clean_up(line, pattern):
 
 def processFile(file):
     print('STARTED PROCESSING %s' %file)
-    object = []
-    output = {}
+    output = []
+    fileInfo = {}
     with open(file) as fin:
         pattern = re.compile(r'"(.*)"')
         header = fin.next()
-        object.append(header.strip().split(','))
+        output.append(header.strip().split(','))
+        print(header)
 
         for i,line in enumerate(fin):
             original = line
@@ -45,32 +48,38 @@ def processFile(file):
             drug = arr[3]
             price = arr[4]
 
-            if(drug in output):
-                output[drug][0] = output[drug][0] + 1
-                output[drug][1] = output[drug][0] + float(price)
+            if(drug in fileInfo):
+                fileInfo[drug][0] = fileInfo[drug][0] + 1
+                fileInfo[drug][1] = fileInfo[drug][0] + float(price)
             else:
-                output[drug] = [1, float(price)]
+                fileInfo[drug] = [1, float(price)]
     fin.close()
     print('FINISHED PROCESSING %s' %file)
-    object.append(output)
-    return object
+    output.append(fileInfo)
+    return output
+
+def writeOutput(file, header, info):
+    file.write("%s,%s,%s\n" %(header[3], 'num_prescriber','total_cost'))
+
+    for key in info.keys():
+        patientCount = info[key][0]
+        totalPrice = info[key][1]
+        file.write("%s,%d,%.2f\n" %(key, patientCount, totalPrice))
+
+    return
 
 if __name__ == "__main__":
+    # filename = sys.argv[1]
     filename = 'de_cc_data.txt'
 
     output = processFile(filename)
 
     header = output[0]
     info = output[1]
+    # outputFile = open(sys.argv[2], 'w+')
+    outputFile = open('./output/top_cost_drug.txt', 'w+')
 
-    outputFile = open('top_cost_drug.txt', 'w')
-
-    outputFile.write("%s,%s,%s\n" %(header[3], 'num_prescriber','total_cost'))
-
-    for key in info.keys():
-        patientCount = info[key][0]
-        totalPrice = info[key][1]
-        outputFile.write("%s,%d,%.2f\n" %(key, patientCount, totalPrice))
+    writeOutput(outputFile, header, info)
 
     outputFile.close()
 
